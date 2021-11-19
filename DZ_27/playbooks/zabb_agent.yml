@@ -1,0 +1,45 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+     
+  - name: Install zabbix-agent on RedHat Family
+    yum:
+      name=zabbix-agent
+      state=latest
+    when:
+      ansible_os_family == "RedHat"
+    notify:
+      zabbix-agent systemd
+
+  - name: Install zabbix-agent on RedHat Family
+    apt:
+      name=zabbix-agent
+      state=latest
+    when:
+      ansible_os_family == "Debian"
+    notify:
+      zabbix-agent systemd
+
+  - name: Config zabbix-agent
+    lineinfile:
+     path: /etc/zabbix/zabbix_agentd.conf
+     insertafter: EOF
+     line: "{{ item }}"
+     state: present
+    with_items:
+    - 'PidFile=/run/zabbix/zabbix_agentd.pid'
+    - 'LogFile=/var/log/zabbix/zabbix_agentd.log'
+    - 'LogFileSize=0'
+    - 'Server=84.201.155.87'
+    - 'ServerActive=84.201.155.87'
+    - 'Hostname={{ ansible_hostname }}'
+
+  handlers:
+  - name: zabbix-agent systemd
+    systemd:
+     name: zabbix-agent.service
+     enabled: yes
+     state: started
+
