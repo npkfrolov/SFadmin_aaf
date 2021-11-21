@@ -1,0 +1,12 @@
+# Apache playbook
+---
+- hosts: "webservers"
+  become: true
+  tasks:
+  - name: "Install apache via apt"
+    ansible.builtin.apt:
+      name: "apache2"
+      state: "latest"
+      update_cache: true
+    notify:
+      - apache2 systemd

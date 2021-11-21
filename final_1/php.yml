@@ -1,0 +1,19 @@
+# php playbook
+---
+- hosts: "webservers"
+  become: true
+  tasks:
+  - name: "Install php via apt"
+    ansible.builtin.apt:
+      name: {{ item }}
+      state: "latest"
+      update_cache: true
+      with_items:
+      - git
+      - php7-cli
+      - php7-curl
+      - php7-fpm
+      - php7-intl
+      - php7-json
+    notify:
+      - php7 systemd

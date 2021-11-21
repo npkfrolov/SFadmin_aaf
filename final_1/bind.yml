@@ -1,0 +1,22 @@
+# bind playbook
+---
+- hosts: "webservers"
+  become: true
+  tasks:
+  - name: "Install bind via apt"
+    ansible.builtin.apt:
+      name: {{ item }}
+      state: present
+      update_cache: true
+    loop:
+      - bind9
+      - dnsutils  
+    notify:
+      - bind systemd
+
+  handlers:
+  - name: bind systemd
+    systemd:
+     name: named.service
+     enabled: yes
+     state: started
